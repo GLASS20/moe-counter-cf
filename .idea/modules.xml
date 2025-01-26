@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/moe-counter-cf.iml" filepath="$PROJECT_DIR$/.idea/moe-counter-cf.iml" />
+      <module fileurl="file://$PROJECT_DIR$/moe-counter-cf.iml" filepath="$PROJECT_DIR$/moe-counter-cf.iml" />
     </modules>
   </component>
 </project>
