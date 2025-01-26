@@ -15,7 +15,7 @@ function genImage(count, theme, length, pixelated) {
     nums = count.toString().padStart(length, '0').split('');
   }
 
-  const { width, height, images } = themes[theme];
+  const { width, height, images } = themes[theme] || themes['default'];  // 确保 theme 存在
   let x = 0; // x 轴
   const parts = nums.reduce((pre, cur) => {
     const uri = images[cur];
@@ -38,33 +38,48 @@ function genImage(count, theme, length, pixelated) {
  * @param {Request} req
  * @param {ExecutionContext} event
  */
-export async function handleRequest(req, event) {
-  // 获取请求参数
-  const url = new URL(req.url);
-  const params = url.searchParams;
+function handleRequest(req, event) {
+  return new Promise((resolve, reject) => {
+    try {
+      // 获取请求参数
+      const url = new URL(req.url);
+      const params = url.searchParams;
 
-  const count = parseInt(params.get('count')) || 0;  // 获取 count，默认为 0
-  const length = params.get('length') || '7';  // 获取 length，默认为 7
-  const theme = params.get('theme') || 'gelbooru';  // 获取 theme，默认为 'default'
-  const pixelated = params.get('render') === 'pixelated';  // 判断是否是像素化渲染
+      const count = parseInt(params.get('count')) || 0;  // 获取 count，默认为 0
+      const length = params.get('length') || '7';  // 获取 length，默认为 7
+      const theme = params.get('theme') || 'gelbooru';  // 获取 theme，默认为 'gelbooru'
+      const pixelated = params.get('render') === 'pixelated';  // 判断是否是像素化渲染
 
-  // 调用生成图像函数
-  const image = genImage(count, theme, length, pixelated);
+      // 调用生成图像函数
+      const image = genImage(count, theme, length, pixelated);
 
-  // 返回图像响应
-  return new Response(image, {
-    status: 200,
-    headers: {
-      'Content-Type': 'image/svg+xml; charset=utf-8',
-    },
+      // 返回图像响应
+      resolve(new Response(image, {
+        status: 200,
+        headers: {
+          'Content-Type': 'image/svg+xml; charset=utf-8',
+        },
+      }));
+    } catch (error) {
+      reject(error); // 如果发生错误，reject
+    }
   });
 }
 
 /**
- * Cloudflare Worker 入口
+ * 生成错误响应
+ * @param {Request} req
+ * @param {Error} error
  */
-export default {
-  async fetch(req, event) {
-    return await handleRequest(req, event);
-  },
-};
+function genErrorResponse(req, error) {
+  return new Response('Error generating image: ' + error.message, {
+    status: 500,
+    headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+  });
+}
+
+addEventListener('fetch', (event) => {
+  event.respondWith(
+    handleRequest(event.request, event).catch((e) => genErrorResponse(event.request, e))
+  );
+});
