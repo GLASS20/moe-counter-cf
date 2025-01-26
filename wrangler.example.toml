@@ -5,9 +5,7 @@ zone_id = "<CF_ZONE_ID>"
 workers_dev = false
 route = "<YOUR_DOMAIN>/*"
 compatibility_date = "2022-03-12"
-kv_namespaces = [
-  { binding = "KV", id = "<CF_KV_ID>", preview_id = "<CF_PREVIEW_KV_ID>" },
-]
+kv_namespaces = []
 
 [build]
 command = "npm run build"

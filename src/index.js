@@ -45,7 +45,7 @@ export async function handleRequest(req, event) {
 
   const count = parseInt(params.get('count')) || 0;  // 获取 count，默认为 0
   const length = params.get('length') || '7';  // 获取 length，默认为 7
-  const theme = params.get('theme') || 'default';  // 获取 theme，默认为 'default'
+  const theme = params.get('theme') || 'gelbooru';  // 获取 theme，默认为 'default'
   const pixelated = params.get('render') === 'pixelated';  // 判断是否是像素化渲染
 
   // 调用生成图像函数
